@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Deals — ITGlow CRM{% endblock %}
+{% block crumb %}Deals{% endblock %}
+{% block create_url %}{{ url_for('deals.deal_new') }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <a class="btn btn-primary" href="{{ url_for('deals.deal_new') }}">+ Deal</a>
+  <form method="get">
+    <input name="q" value="{{ q }}" placeholder="Search deals">
+    <select name="stage" onchange="this.form.submit()">
+      <option value="">All stages</option>
+      {% for s in stages %}<option value="{{ s }}" {% if stage==s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+    </select>
+    <select name="status" onchange="this.form.submit()">
+      <option value="open" {% if status=='open' %}selected{% endif %}>Open</option>
+      <option value="won" {% if status=='won' %}selected{% endif %}>Won</option>
+      <option value="lost" {% if status=='lost' %}selected{% endif %}>Lost</option>
+      <option value="all" {% if status=='all' %}selected{% endif %}>All</option>
+    </select>
+  </form>
+  <div class="spacer"></div>
+  <span class="muted">{{ pagination.total }} deals · {{ '%.0f'|format(total_value) }} on this page</span>
+  <a class="btn btn-outline" href="{{ url_for('deals.deals_template') }}">Template</a>
+  <a class="btn btn-outline" href="{{ url_for('deals.deals_import') }}">Import deals</a>
+  <a class="btn btn-outline" href="{{ url_for('deals.deals_export') }}">Export</a>
+</div>
+<form method="post" action="{{ url_for('deals.deals_bulk_delete') }}" data-confirm="Delete selected deals?">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th><input type="checkbox" onclick="toggleAll(this)"></th>
+          <th>Title</th><th>Value</th><th>Organization</th><th>Contact person</th>
+          <th>Expected close date</th><th>Next activity date</th><th>Owner</th><th>Stage</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in items %}
+        <tr>
+          <td><input type="checkbox" name="selected" value="{{ d.id }}"></td>
+          <td><a href="{{ url_for('deals.deal_detail', deal_id=d.id) }}">{{ d.title }}</a></td>
+          <td>{{ d.currency }}{{ '%.0f'|format(d.value or 0) }}</td>
+          <td>{% if d.organization %}<a href="{{ url_for('contacts.organization_detail', org_id=d.organization.id) }}">{{ d.organization.name }}</a>{% endif %}</td>
+          <td>{% if d.person %}<a href="{{ url_for('contacts.person_detail', person_id=d.person.id) }}">{{ d.person.name }}</a>{% endif %}</td>
+          <td>{{ d.expected_close_date.strftime('%b %d, %Y') if d.expected_close_date else '' }}</td>
+          <td>{{ d.next_activity_date.strftime('%b %d, %Y') if d.next_activity_date else '' }}</td>
+          <td>{{ d.owner.name if d.owner else '' }}</td>
+          <td>
+            <form method="post" action="{{ url_for('deals.deal_stage', deal_id=d.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <select name="stage" onchange="this.form.submit()">
+                {% for s in stages %}<option value="{{ s }}" {% if d.stage==s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+              </select>
+            </form>
+          </td>
+          <td class="row-actions"><a href="{{ url_for('deals.deal_edit', deal_id=d.id) }}">Edit</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="10" class="empty">No deals in this view. Create a deal or import from Excel.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if items %}<button class="btn btn-outline btn-sm" type="submit">Delete selected</button>{% endif %}
+</form>
+{% include "_pager.html" %}
+{% endblock %}

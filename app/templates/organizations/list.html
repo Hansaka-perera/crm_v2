@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Organizations — ITGlow CRM{% endblock %}
+{% block crumb %}Contacts / Organizations{% endblock %}
+{% block create_url %}{{ url_for('contacts.organization_new') }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <a class="btn btn-primary" href="{{ url_for('contacts.organization_new') }}">+ Organization</a>
+  <form method="get" style="margin:0;"><input name="q" value="{{ q }}" placeholder="Search organizations"></form>
+  <div class="spacer"></div>
+  <span class="muted">{{ pagination.total }} organizations</span>
+  <a class="btn btn-outline" href="{{ url_for('contacts.organizations_template') }}">Template</a>
+  <a class="btn btn-outline" href="{{ url_for('contacts.organizations_import') }}">Import organizations</a>
+  <a class="btn btn-outline" href="{{ url_for('contacts.organizations_export') }}">Export</a>
+</div>
+<div class="banner">
+  <div>
+    <h3>Find the right contacts faster</h3>
+    <p>Keep company records next to the people and deals that belong to them.</p>
+  </div>
+</div>
+<form method="post" action="{{ url_for('contacts.organizations_bulk_delete') }}" data-confirm="Delete selected organizations?">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th><input type="checkbox" onclick="toggleAll(this)"></th>
+          <th>Name</th><th>Address</th><th>People</th><th>Closed deals</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for o in items %}
+        <tr>
+          <td><input type="checkbox" name="selected" value="{{ o.id }}"></td>
+          <td><a href="{{ url_for('contacts.organization_detail', org_id=o.id) }}">{{ o.name }}</a></td>
+          <td>{{ o.address }}</td>
+          <td>{{ people_counts.get(o.id, 0) }}</td>
+          <td>{{ closed_counts.get(o.id, 0) }}</td>
+          <td class="row-actions"><a href="{{ url_for('contacts.organization_edit', org_id=o.id) }}">Edit</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="empty">No organizations yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if items %}<button class="btn btn-outline btn-sm" type="submit">Delete selected</button>{% endif %}
+</form>
+{% include "_pager.html" %}
+{% endblock %}

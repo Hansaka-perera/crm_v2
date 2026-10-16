@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}ITGlow CRM{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body>
+{% set has_sub = section in ['contacts', 'leads', 'settings'] %}
+<div class="app-shell {% if has_sub %}has-subnav{% endif %}">
+  <nav class="icon-rail" aria-label="Primary">
+    <a class="brand-mark" href="{{ url_for('contacts.people') }}" title="ITGlow CRM">IG</a>
+    <a class="rail-link {% if section=='setup' %}active{% endif %}" href="{{ url_for('main.setup_guide') }}" title="Setup guide">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5m4 14V9m4 10V7m4 12V4m4 15V10"/></svg>
+    </a>
+    <a class="rail-link {% if section=='contacts' %}active{% endif %}" href="{{ url_for('contacts.people') }}" title="Contacts">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><path d="M4 19c.5-3 2.5-5 5-5s4.5 2 5 5"/><circle cx="17" cy="9" r="2"/><path d="M16 19c.3-2 1.5-3.5 3.5-3.5"/></svg>
+    </a>
+    <a class="rail-link {% if section=='activities' %}active{% endif %}" href="{{ url_for('activities.list_activities') }}" title="Activities">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>
+    </a>
+    <a class="rail-link {% if section=='deals' %}active{% endif %}" href="{{ url_for('deals.list_deals') }}" title="Deals">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v18M7 8h7a3 3 0 010 6H8a3 3 0 000 6h9"/></svg>
+    </a>
+    <a class="rail-link {% if section=='leads' %}active{% endif %}" href="{{ url_for('leads.inbox') }}" title="Leads">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg>
+    </a>
+    <a class="rail-link {% if section=='insights' %}active{% endif %}" href="{{ url_for('insights.dashboard') }}" title="Insights">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 19V9l5 4 4-7 5 6v7H5z"/></svg>
+    </a>
+    <a class="rail-link {% if section=='inbox' %}active{% endif %}" href="{{ url_for('inbox.list_messages') }}" title="Sales Inbox">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg>
+    </a>
+    <a class="rail-link {% if section=='customers' %}active{% endif %}" href="{{ url_for('customers.list_requests') }}" title="APP Customers">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>
+    </a>
+    <div class="rail-spacer"></div>
+    {% if current_user.role == 'admin' %}
+    <a class="rail-link {% if section=='settings' %}active{% endif %}" href="{{ url_for('admin.users') }}" title="Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9c.3.7 1 .9 1.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>
+    </a>
+    {% endif %}
+    <div class="rail-user" title="{{ current_user.name }}">{{ current_user.name[:2]|upper }}</div>
+  </nav>
+
+  {% if has_sub %}
+  <aside class="subnav">
+    {% if section == 'contacts' %}
+      <h2>Contacts</h2>
+      <a class="{% if subsection=='people' %}active{% endif %}" href="{{ url_for('contacts.people') }}">People</a>
+      <a class="{% if subsection=='organizations' %}active{% endif %}" href="{{ url_for('contacts.organizations') }}">Organizations</a>
+      <a class="{% if subsection=='timeline' %}active{% endif %}" href="{{ url_for('contacts.timeline') }}">Contacts timeline</a>
+      <a class="{% if subsection=='merge' %}active{% endif %}" href="{{ url_for('contacts.merge') }}">Merge duplicates</a>
+      <div class="promo-card">
+        <strong>ITGlow CRM</strong>
+        <div class="muted">People, companies, and deals stay connected in one workspace.</div>
+      </div>
+    {% elif section == 'leads' %}
+      <h2>Leads</h2>
+      <a class="{% if subsection=='inbox' %}active{% endif %}" href="{{ url_for('leads.inbox') }}">Leads Inbox</a>
+      <div class="muted" style="padding:8px 12px;font-size:11px;letter-spacing:.04em;">LEAD TOOLS</div>
+      <a class="{% if subsection=='live_chat' %}active{% endif %}" href="{{ url_for('leads.live_chat') }}">Live Chat</a>
+      <a class="{% if subsection=='chatbot' %}active{% endif %}" href="{{ url_for('leads.chatbot') }}">Chatbot</a>
+      <a class="{% if subsection=='web_forms' %}active{% endif %}" href="{{ url_for('leads.web_forms') }}">Web Forms</a>
+      <a class="{% if subsection=='prospector' %}active{% endif %}" href="{{ url_for('leads.prospector') }}">Prospector</a>
+      <a class="{% if subsection=='web_visitors' %}active{% endif %}" href="{{ url_for('leads.web_visitors') }}">Web Visitors</a>
+    {% elif section == 'settings' %}
+      <h2>Settings</h2>
+      <a class="{% if subsection=='users' %}active{% endif %}" href="{{ url_for('admin.users') }}">Users & roles</a>
+      <a class="{% if subsection=='api' %}active{% endif %}" href="{{ url_for('admin.api_keys') }}">API keys</a>
+    {% endif %}
+  </aside>
+  {% endif %}
+
+  <section class="main">
+    <header class="topbar">
+      <div class="crumb">{% block crumb %}ITGlow CRM{% endblock %}</div>
+      <form class="search" action="{{ url_for('main.search') }}" method="get">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3-3"/></svg>
+        <input name="q" value="{{ request.args.get('q','') }}" placeholder="Search ITGlow CRM" aria-label="Search">
+      </form>
+      <div class="top-actions">
+        <a class="btn btn-primary btn-sm" href="{% block create_url %}{{ url_for('contacts.person_new') }}{% endblock %}">+ Add</a>
+        <form method="post" action="{{ url_for('auth.logout') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="icon-btn" title="Sign out" type="submit">⎋</button>
+        </form>
+        <div class="avatar">{{ current_user.name[:2]|upper }}</div>
+      </div>
+    </header>
+    <div class="page">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for cat, msg in messages %}
+          <div class="flash {{ cat }}">{{ msg }}</div>
+        {% endfor %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </div>
+  </section>
+</div>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

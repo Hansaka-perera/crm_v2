@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block crumb %}Leads / {{ tool.replace('_',' ')|title }}{% endblock %}
+{% block content %}
+<h1>{{ tool.replace('_',' ')|title }}</h1>
+{% if tool == 'live_chat' %}
+  <p>Live chat from an external widget is not connected. Incoming conversations can be captured as leads via the public web form or the APP Customers API.</p>
+  <a class="btn btn-primary" href="{{ url_for('leads.web_forms') }}">Open web forms</a>
+{% elif tool == 'chatbot' %}
+  <p>The chatbot widget requires an external messaging provider. Until that is connected, website visitors can submit the public lead form and staff can qualify them here.</p>
+  <a class="btn btn-primary" href="{{ url_for('leads.lead_new') }}">Add a lead manually</a>
+{% endif %}
+<div class="panel" style="margin-top:16px;">
+  <p class="muted">These tools are functional entry points into Leads Inbox. They do not simulate a third-party chat vendor.</p>
+</div>
+{% endblock %}

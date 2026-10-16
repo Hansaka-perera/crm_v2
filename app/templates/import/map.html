@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block crumb %}Map columns{% endblock %}
+{% block content %}
+<h1>Map columns</h1>
+<p>{{ count }} rows ready. Match each ITGlow field to a column from your file.</p>
+<form method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="step" value="commit">
+  <table class="data">
+    <thead><tr><th>ITGlow field</th><th>File column</th></tr></thead>
+    <tbody>
+      {% for field in fields %}
+      <tr>
+        <td>{{ field }}</td>
+        <td>
+          <select name="map_{{ field }}">
+            <option value="__skip__">Skip</option>
+            {% for h in headers %}
+            <option value="{{ h }}" {% if h|lower == field|lower %}selected{% endif %}>{{ h }}</option>
+            {% endfor %}
+          </select>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p>Duplicates:
+    <label><input type="radio" name="duplicate" value="skip" checked> Skip</label>
+    <label><input type="radio" name="duplicate" value="update"> Update existing</label>
+    <label><input type="radio" name="duplicate" value="create"> Always create</label>
+  </p>
+  <h3>Preview</h3>
+  <table class="data">
+    <thead><tr>{% for h in headers %}<th>{{ h }}</th>{% endfor %}</tr></thead>
+    <tbody>
+      {% for row in preview %}
+      <tr>{% for h in headers %}<td>{{ row.get(h, '') }}</td>{% endfor %}</tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <button class="btn btn-primary">Import into database</button>
+</form>
+{% endblock %}

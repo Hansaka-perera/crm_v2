@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block crumb %}Sales Inbox{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Sales Inbox</h1>
+  <form method="get"><input name="q" value="{{ q }}" placeholder="Search messages">
+    <label><input type="checkbox" name="unread" value="1" {% if unread=='1' %}checked{% endif %} onchange="this.form.submit()"> Unread</label>
+  </form>
+</div>
+<form method="post" action="{{ url_for('inbox.message_new') }}" class="panel form-grid" style="margin-bottom:16px;">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label class="field">Subject <input name="subject" required></label>
+  <label class="field">From email <input name="from_email"></label>
+  <label class="field">Linked person
+    <select name="person_id"><option value="">—</option>{% for p in people %}<option value="{{ p.id }}">{{ p.name }}</option>{% endfor %}</select>
+  </label>
+  <label class="field full">Body <textarea name="body"></textarea></label>
+  <div class="full"><button class="btn btn-primary">Log message</button></div>
+</form>
+<table class="data">
+  <thead><tr><th>Subject</th><th>From</th><th>Person</th><th>Status</th></tr></thead>
+  <tbody>
+    {% for m in items %}
+    <tr>
+      <td><a href="{{ url_for('inbox.message_detail', message_id=m.id) }}">{{ m.subject }}</a></td>
+      <td>{{ m.from_email }}</td>
+      <td>{{ m.person.name if m.person else '' }}</td>
+      <td>{{ 'Read' if m.is_read else 'Unread' }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4" class="empty">Inbox is empty.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% include "_pager.html" %}
+{% endblock %}

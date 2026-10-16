@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block crumb %}Leads / {% if lead %}Edit{% else %}New{% endif %}{% endblock %}
+{% block content %}
+<h2>{% if lead %}Edit lead{% else %}Add a lead{% endif %}</h2>
+<form method="post" class="form-grid">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label class="field full">Title <input name="title" required value="{{ lead.title if lead else '' }}"></label>
+  <label class="field">Person name <input name="person_name" value="{{ lead.person_name if lead else '' }}"></label>
+  <label class="field">Email <input type="email" name="email" value="{{ lead.email if lead else '' }}"></label>
+  <label class="field">Phone <input name="phone" value="{{ lead.phone if lead else '' }}"></label>
+  <label class="field">Organization <input name="organization_name" value="{{ lead.organization_name if lead else '' }}"></label>
+  <label class="field">Status
+    <select name="status">{% for s in statuses %}<option {% if lead and lead.status==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
+  </label>
+  <div class="full"><button class="btn btn-primary">Save</button></div>
+</form>
+{% endblock %}

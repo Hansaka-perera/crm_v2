@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}{% if person %}Edit person{% else %}New person{% endif %}{% endblock %}
+{% block crumb %}Contacts / People / {% if person %}Edit{% else %}New{% endif %}{% endblock %}
+{% block content %}
+<h2>{% if person %}Edit person{% else %}Add a person{% endif %}</h2>
+<form method="post" class="form-grid">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label class="field">Name <input name="name" required value="{{ person.name if person else '' }}"></label>
+  <label class="field">Email <input type="email" name="email" value="{{ person.email if person else '' }}"></label>
+  <label class="field">Phone <input name="phone" value="{{ person.phone if person else '' }}"></label>
+  <label class="field">Job title <input name="job_title" value="{{ person.job_title if person else '' }}"></label>
+  <label class="field">Organization
+    <select name="organization_id">
+      <option value="">—</option>
+      {% for o in organizations %}
+      <option value="{{ o.id }}" {% if person and person.organization_id==o.id %}selected{% endif %}>{{ o.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  {% if current_user.can_manage_all() %}
+  <label class="field">Owner
+    <select name="owner_id">
+      {% for u in users %}
+      <option value="{{ u.id }}" {% if person and person.owner_id==u.id %}selected{% endif %}>{{ u.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  {% endif %}
+  <div class="full">
+    <button class="btn btn-primary" type="submit">Save</button>
+    <a class="btn btn-outline" href="{{ url_for('contacts.people') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

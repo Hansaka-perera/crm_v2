@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block crumb %}Contacts / Organizations / {% if org %}Edit{% else %}New{% endif %}{% endblock %}
+{% block content %}
+<h2>{% if org %}Edit organization{% else %}Add an organization{% endif %}</h2>
+<form method="post" class="form-grid">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label class="field">Name <input name="name" required value="{{ org.name if org else '' }}"></label>
+  <label class="field">Phone <input name="phone" value="{{ org.phone if org else '' }}"></label>
+  <label class="field full">Address <input name="address" value="{{ org.address if org else '' }}"></label>
+  <label class="field full">Website <input name="website" value="{{ org.website if org else '' }}"></label>
+  {% if current_user.can_manage_all() %}
+  <label class="field">Owner
+    <select name="owner_id">{% for u in users %}<option value="{{ u.id }}" {% if org and org.owner_id==u.id %}selected{% endif %}>{{ u.name }}</option>{% endfor %}</select>
+  </label>
+  {% endif %}
+  <div class="full"><button class="btn btn-primary" type="submit">Save</button> <a class="btn btn-outline" href="{{ url_for('contacts.organizations') }}">Cancel</a></div>
+</form>
+{% endblock %}

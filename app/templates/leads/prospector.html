@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block crumb %}Leads / Prospector{% endblock %}
+{% block content %}
+<h1>Prospector</h1>
+<p class="muted">Search existing organizations and create a lead from a company you already work with.</p>
+<form method="get"><input name="q" value="{{ q }}" placeholder="Search companies"></form>
+<table class="data">
+  <thead><tr><th>Organization</th><th>Website</th><th></th></tr></thead>
+  <tbody>
+    {% for o in organizations %}
+    <tr>
+      <td>{{ o.name }}</td>
+      <td>{{ o.website }}</td>
+      <td><a class="btn btn-outline btn-sm" href="{{ url_for('leads.lead_new') }}?organization_name={{ o.name }}">Create lead</a></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="3">No matching organizations.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

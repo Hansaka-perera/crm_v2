@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block crumb %}Settings / Users{% endblock %}
+{% block content %}
+<h1>Users & roles</h1>
+<form method="post" action="{{ url_for('admin.user_new') }}" class="form-grid panel">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label class="field">Name <input name="name" required></label>
+  <label class="field">Email <input type="email" name="email" required></label>
+  <label class="field">Password <input type="password" name="password" required minlength="8"></label>
+  <label class="field">Role
+    <select name="role"><option>sales</option><option>manager</option><option>admin</option></select>
+  </label>
+  <div class="full"><button class="btn btn-primary">Add user</button></div>
+</form>
+<table class="data">
+  <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Active</th><th></th></tr></thead>
+  <tbody>
+    {% for u in users %}
+    <tr>
+      <td>{{ u.name }}</td><td>{{ u.email }}</td><td>{{ u.role }}</td><td>{{ 'Yes' if u.is_active else 'No' }}</td>
+      <td>
+        {% if u.id != current_user.id %}
+        <form method="post" action="{{ url_for('admin.user_toggle', user_id=u.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-sm btn-outline">Toggle</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

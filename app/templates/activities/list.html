@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block crumb %}Activities{% endblock %}
+{% block create_url %}{{ url_for('activities.activity_new') }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <a class="btn btn-primary" href="{{ url_for('activities.activity_new') }}">+ Activity</a>
+  <form method="get">
+    <input name="q" value="{{ q }}" placeholder="Search activities">
+    <select name="type" onchange="this.form.submit()">
+      <option value="">All types</option>
+      {% for t in types %}<option value="{{ t }}" {% if type==t %}selected{% endif %}>{{ t }}</option>{% endfor %}
+    </select>
+    <select name="done" onchange="this.form.submit()">
+      <option value="">All</option>
+      <option value="open" {% if done=='open' %}selected{% endif %}>Open</option>
+      <option value="done" {% if done=='done' %}selected{% endif %}>Done</option>
+    </select>
+  </form>
+  <div class="spacer"></div>
+  <a class="btn btn-outline" href="{{ url_for('activities.activities_template') }}">Template</a>
+  <a class="btn btn-outline" href="{{ url_for('activities.activities_import') }}">Import</a>
+  <a class="btn btn-outline" href="{{ url_for('activities.activities_export') }}">Export</a>
+</div>
+<form method="post" action="{{ url_for('activities.bulk_delete') }}" data-confirm="Delete selected activities?">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <table class="data">
+    <thead><tr><th></th><th>Type</th><th>Subject</th><th>Due</th><th>Person</th><th>Deal</th><th>Done</th><th></th></tr></thead>
+    <tbody>
+      {% for a in items %}
+      <tr>
+        <td><input type="checkbox" name="selected" value="{{ a.id }}"></td>
+        <td>{{ a.type }}</td>
+        <td>{{ a.subject }}</td>
+        <td>{{ a.due_at.strftime('%Y-%m-%d %H:%M') if a.due_at else '' }}</td>
+        <td>{{ a.person.name if a.person else '' }}</td>
+        <td>{{ a.deal.title if a.deal else '' }}</td>
+        <td>
+          <form method="post" action="{{ url_for('activities.activity_toggle', activity_id=a.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-sm btn-outline">{{ 'Yes' if a.done else 'No' }}</button>
+          </form>
+        </td>
+        <td><a href="{{ url_for('activities.activity_edit', activity_id=a.id) }}">Edit</a></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="8" class="empty">No activities yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if items %}<button class="btn btn-outline btn-sm">Delete selected</button>{% endif %}
+</form>
+{% include "_pager.html" %}
+{% endblock %}

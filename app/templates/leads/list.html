@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block crumb %}Leads / Leads Inbox{% endblock %}
+{% block create_url %}{{ url_for('leads.lead_new') }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <a class="btn btn-primary" href="{{ url_for('leads.lead_new') }}">+ Lead</a>
+  <form method="get">
+    <input name="q" value="{{ q }}" placeholder="Search leads">
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All statuses</option>
+      {% for s in statuses %}<option value="{{ s }}" {% if status==s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+    </select>
+  </form>
+  <div class="spacer"></div>
+  <a class="btn btn-outline" href="{{ url_for('leads.leads_template') }}">Template</a>
+  <a class="btn btn-outline" href="{{ url_for('leads.leads_import') }}">Import leads</a>
+  <a class="btn btn-outline" href="{{ url_for('leads.leads_export') }}">Export</a>
+</div>
+{% if not items %}
+<div class="empty">
+  <h2>Add your first lead</h2>
+  <p>Organize and qualify incoming opportunities here — then convert the right ones into deals.</p>
+  <a class="btn btn-primary" href="{{ url_for('leads.lead_new') }}">+ Lead</a>
+  <a class="btn btn-outline" href="{{ url_for('leads.leads_import') }}">Import leads</a>
+</div>
+{% else %}
+<form method="post" action="{{ url_for('leads.leads_bulk_delete') }}" data-confirm="Delete selected leads?">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <table class="data">
+    <thead><tr><th></th><th>Title</th><th>Person</th><th>Email</th><th>Organization</th><th>Status</th><th>Source</th><th></th></tr></thead>
+    <tbody>
+      {% for l in items %}
+      <tr>
+        <td><input type="checkbox" name="selected" value="{{ l.id }}"></td>
+        <td><a href="{{ url_for('leads.lead_detail', lead_id=l.id) }}">{{ l.title }}</a></td>
+        <td>{{ l.person_name }}</td>
+        <td>{{ l.email }}</td>
+        <td>{{ l.organization_name }}</td>
+        <td>{{ l.status }}</td>
+        <td>{{ l.source }}</td>
+        <td class="row-actions"><a href="{{ url_for('leads.lead_edit', lead_id=l.id) }}">Edit</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <button class="btn btn-outline btn-sm" type="submit">Delete selected</button>
+</form>
+{% include "_pager.html" %}
+{% endif %}
+{% endblock %}

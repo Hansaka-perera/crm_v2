@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block crumb %}Leads / Web Visitors{% endblock %}
+{% block content %}
+<h1>Web Visitors</h1>
+<p class="muted">Leads captured from public web forms appear here. Full website visitor tracking would need a tracking script on the customer site.</p>
+<table class="data">
+  <thead><tr><th>Title</th><th>Person</th><th>Email</th><th>Source</th><th>Created</th></tr></thead>
+  <tbody>
+    {% for l in items %}
+    <tr>
+      <td><a href="{{ url_for('leads.lead_detail', lead_id=l.id) }}">{{ l.title }}</a></td>
+      <td>{{ l.person_name }}</td>
+      <td>{{ l.email }}</td>
+      <td>{{ l.source }}</td>
+      <td>{{ l.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5">No web form submissions yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

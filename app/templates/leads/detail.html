@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block crumb %}Leads / {{ lead.title }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>{{ lead.title }}</h1>
+  <a class="btn btn-outline" href="{{ url_for('leads.lead_edit', lead_id=lead.id) }}">Edit</a>
+  {% if lead.status != 'converted' %}
+  <form method="post" action="{{ url_for('leads.lead_convert', lead_id=lead.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="btn btn-primary">Convert to deal</button>
+  </form>
+  {% endif %}
+</div>
+<div class="panel">
+  <p><strong>Person:</strong> {{ lead.person_name or '—' }}</p>
+  <p><strong>Email:</strong> {{ lead.email or '—' }}</p>
+  <p><strong>Phone:</strong> {{ lead.phone or '—' }}</p>
+  <p><strong>Organization:</strong> {{ lead.organization_name or '—' }}</p>
+  <p><strong>Status:</strong> {{ lead.status }} · <strong>Source:</strong> {{ lead.source }}</p>
+</div>
+{% endblock %}

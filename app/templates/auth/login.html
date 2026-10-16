@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in — ITGlow CRM</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body>
+  <div class="login-wrap">
+    <form class="login-card" method="post">
+      {{ form.hidden_tag() }}
+
+      <div class="login-brand">
+        <span class="brand-mark">IG</span>
+        <strong>ITGlow CRM</strong>
+      </div>
+
+      <h1>Welcome back</h1>
+      <p>Sign in to manage people, deals, and customer requests.</p>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for cat, msg in messages %}
+          <div class="flash {{ cat }}" role="alert">{{ msg }}</div>
+        {% endfor %}
+      {% endwith %}
+
+      {% if form.errors %}
+        <div class="flash error" role="alert">
+          <strong>Please check your login details:</strong>
+          <ul>
+            {% for field_name, errors in form.errors.items() %}
+              {% for error in errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      <label>
+        Email
+        {{ form.email(autocomplete="username", required=true) }}
+      </label>
+
+      {% for error in form.email.errors %}
+        <small class="field-error">{{ error }}</small>
+      {% endfor %}
+
+      <label>
+        Password
+        {{ form.password(autocomplete="current-password", required=true) }}
+      </label>
+
+      {% for error in form.password.errors %}
+        <small class="field-error">{{ error }}</small>
+      {% endfor %}
+
+      <label style="flex-direction:row;gap:8px;margin-top:12px;">
+        {{ form.remember() }}
+        Remember me
+      </label>
+
+      <button class="btn btn-primary"
+              style="width:100%;justify-content:center;margin-top:16px;"
+              type="submit">
+        Sign in
+      </button>
+
+      <p class="hint">
+        Default admin: admin@itglow.local / Admin@123<br>
+        Manager: manager@itglow.local / Manager@123<br>
+        Sales: sales@itglow.local / Sales@123
+      </p>
+    </form>
+  </div>
+</body>
+</html>

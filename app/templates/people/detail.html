@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}{{ person.name }}{% endblock %}
+{% block crumb %}Contacts / People / {{ person.name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>{{ person.name }}</h1>
+  <a class="btn btn-outline" href="{{ url_for('contacts.person_edit', person_id=person.id) }}">Edit</a>
+  <form method="post" action="{{ url_for('contacts.person_delete', person_id=person.id) }}" data-confirm="Delete this person?">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="btn btn-danger" type="submit">Delete</button>
+  </form>
+</div>
+<div class="detail">
+  <div>
+    <div class="panel">
+      <p><strong>Email:</strong> {{ person.email or '—' }}</p>
+      <p><strong>Phone:</strong> {{ person.phone or '—' }}</p>
+      <p><strong>Title:</strong> {{ person.job_title or '—' }}</p>
+      <p><strong>Organization:</strong> {% if person.organization %}<a href="{{ url_for('contacts.organization_detail', org_id=person.organization.id) }}">{{ person.organization.name }}</a>{% else %}—{% endif %}</p>
+      <p><strong>Owner:</strong> {{ person.owner.name if person.owner else '—' }}</p>
+    </div>
+    <div class="panel" style="margin-top:12px;">
+      <h3>Deals</h3>
+      {% for d in deals %}
+        <div><a href="{{ url_for('deals.deal_detail', deal_id=d.id) }}">{{ d.title }}</a> · {{ d.currency }} {{ '%.0f'|format(d.value or 0) }} · {{ d.stage }}</div>
+      {% else %}<p class="muted">No deals linked.</p>{% endfor %}
+    </div>
+    <div class="panel" style="margin-top:12px;">
+      <h3>Activities</h3>
+      {% for a in activities %}
+        <div>{{ a.type }} · {{ a.subject }} {% if a.done %}(done){% endif %}</div>
+      {% else %}<p class="muted">No activities yet.</p>{% endfor %}
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Notes</h3>
+    <form method="post" action="{{ url_for('contacts.person_note', person_id=person.id) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <textarea name="body" required placeholder="Add a note"></textarea>
+      <button class="btn btn-primary" type="submit" style="margin-top:8px;">Save note</button>
+    </form>
+    {% for n in notes %}
+      <p><strong>{{ n.author.name if n.author else 'User' }}</strong> <span class="muted">{{ n.created_at.strftime('%Y-%m-%d %H:%M') }}</span><br>{{ n.body }}</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

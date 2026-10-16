@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block crumb %}Insights{% endblock %}
+{% block content %}
+<h1>Insights</h1>
+<div class="cards">
+  {% for label, key in [('People','people'),('Organizations','organizations'),('Open deals','open_deals'),('Won deals','won_deals'),('Pipeline value','pipeline_value'),('Open leads','leads'),('Open activities','open_activities'),('Open customer requests','customer_requests')] %}
+  <div class="stat-card"><div class="muted">{{ label }}</div><div class="n">{% if key=='pipeline_value' %}{{ '%.0f'|format(stats[key]) }}{% else %}{{ stats[key] }}{% endif %}</div></div>
+  {% endfor %}
+</div>
+<h3>Open pipeline by stage</h3>
+<div class="pipeline">
+  {% for stage, data in pipeline.items() %}
+  <div class="stage-card">
+    <h4>{{ stage }}</h4>
+    <div>{{ data.count }} deals</div>
+    <div class="muted">LKR {{ '%.0f'|format(data.value) }}</div>
+  </div>
+  {% endfor %}
+</div>
+<div class="detail" style="margin-top:20px;">
+  <div class="panel">
+    <h3>Recent deals</h3>
+    {% for d in recent_deals %}<div><a href="{{ url_for('deals.deal_detail', deal_id=d.id) }}">{{ d.title }}</a></div>{% endfor %}
+  </div>
+  <div class="panel">
+    <h3>Recent customer requests</h3>
+    {% for c in recent_requests %}<div><a href="{{ url_for('customers.detail', request_id=c.id) }}">{{ c.title }}</a></div>{% else %}<p class="muted">No customer app requests yet.</p>{% endfor %}
+  </div>
+</div>
+{% endblock %}

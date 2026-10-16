@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}People — ITGlow CRM{% endblock %}
+{% block crumb %}Contacts / People{% endblock %}
+{% block create_url %}{{ url_for('contacts.person_new') }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <a class="btn btn-primary" href="{{ url_for('contacts.person_new') }}">+ Person</a>
+  <form method="get" class="search" style="margin:0;max-width:280px;">
+    <input name="q" value="{{ q }}" placeholder="Search people">
+  </form>
+  <div class="spacer"></div>
+  <span class="muted">{{ pagination.total }} people</span>
+  <a class="btn btn-outline" href="{{ url_for('contacts.people_template') }}">Template</a>
+  <a class="btn btn-outline" href="{{ url_for('contacts.people_import') }}">Import contacts</a>
+  <a class="btn btn-outline" href="{{ url_for('contacts.people_export') }}">Export</a>
+</div>
+<div class="banner">
+  <div>
+    <h3>Find the right contacts faster</h3>
+    <p>Filters make it easy to manage a growing contact list. Search, sort, and import from Excel without leaving this table.</p>
+    <span class="chip">Connected to organizations, deals, and activities</span>
+  </div>
+</div>
+<form method="post" action="{{ url_for('contacts.people_bulk_delete') }}" data-confirm="Delete selected people?">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th><input type="checkbox" onclick="toggleAll(this)"></th>
+          <th><a href="?sort=name&dir=asc">Name</a></th>
+          <th>Organization</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in items %}
+        <tr>
+          <td><input type="checkbox" name="selected" value="{{ p.id }}"></td>
+          <td><a href="{{ url_for('contacts.person_detail', person_id=p.id) }}">{{ p.name }}</a></td>
+          <td>{% if p.organization %}<a href="{{ url_for('contacts.organization_detail', org_id=p.organization.id) }}">{{ p.organization.name }}</a>{% endif %}</td>
+          <td>{% if p.email %}<a href="mailto:{{ p.email }}">{{ p.email }}</a> <span class="muted">(Work)</span>{% endif %}</td>
+          <td class="phone">{{ p.phone }}</td>
+          <td class="row-actions"><a href="{{ url_for('contacts.person_edit', person_id=p.id) }}">Edit</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="empty">No people yet. Create a person or import an Excel file.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if items %}<button class="btn btn-outline btn-sm" type="submit">Delete selected</button>{% endif %}
+</form>
+{% include "_pager.html" %}
+<div class="footer-cta">
+  <a class="btn btn-outline" href="{{ url_for('contacts.people_import') }}">Import contacts</a>
+</div>
+{% endblock %}

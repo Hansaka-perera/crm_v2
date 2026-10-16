@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block crumb %}Contacts / Merge duplicates{% endblock %}
+{% block content %}
+<h1>Merge duplicates</h1>
+<p class="muted">People who share the same email address can be merged. Activities, deals, and notes move to the contact you keep.</p>
+{% for group in groups %}
+<form method="post" class="panel" style="margin-bottom:12px;" data-confirm="Merge these contacts?">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <p><strong>{{ group[0].email }}</strong></p>
+  {% for p in group %}
+    <label><input type="radio" name="keep" value="{{ p.id }}" {% if loop.first %}checked{% endif %}> Keep {{ p.name }} (#{{ p.id }})</label>
+    <input type="hidden" name="merge_ids" value="{{ p.id }}">
+    <br>
+  {% endfor %}
+  <button class="btn btn-primary" type="submit" style="margin-top:8px;">Merge group</button>
+</form>
+{% else %}
+<div class="empty">No duplicate emails found.</div>
+{% endfor %}
+{% endblock %}

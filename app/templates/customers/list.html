@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block crumb %}APP Customers{% endblock %}
+{% block create_url %}{{ url_for('customers.list_requests') }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>APP Customers</h1>
+  <form method="get">
+    <input name="q" value="{{ q }}" placeholder="Search requests">
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All statuses</option>
+      {% for s in statuses %}<option value="{{ s }}" {% if status==s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+    </select>
+  </form>
+  <div class="spacer"></div>
+  <a class="btn btn-outline" href="{{ url_for('customers.template') }}">Template</a>
+  {% if current_user.role in ['admin','manager'] %}
+  <a class="btn btn-outline" href="{{ url_for('customers.import_file') }}">Import</a>
+  {% endif %}
+  <a class="btn btn-outline" href="{{ url_for('customers.export') }}">Export</a>
+</div>
+<p class="muted">Customer applications submit requests to <code>POST /api/v1/customer-requests</code> with header <code>X-API-Key</code>. Staff can assign, approve, reject, and complete them here.</p>
+<form method="post" action="{{ url_for('customers.bulk_delete') }}" data-confirm="Delete selected requests?">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <table class="data">
+    <thead><tr><th></th><th>Title</th><th>Customer</th><th>Email</th><th>Type</th><th>Status</th><th>Assigned</th></tr></thead>
+    <tbody>
+      {% for c in items %}
+      <tr>
+        <td><input type="checkbox" name="selected" value="{{ c.id }}"></td>
+        <td><a href="{{ url_for('customers.detail', request_id=c.id) }}">{{ c.title }}</a></td>
+        <td>{{ c.customer_name }}</td>
+        <td>{{ c.customer_email }}</td>
+        <td>{{ c.request_type }}</td>
+        <td>{{ c.status }}</td>
+        <td>{{ c.assigned_to.name if c.assigned_to else 'Unassigned' }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="empty">No customer requests yet. Use the API or Excel import to add them.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if items and current_user.role in ['admin','manager'] %}<button class="btn btn-outline btn-sm">Delete selected</button>{% endif %}
+</form>
+{% include "_pager.html" %}
+{% endblock %}

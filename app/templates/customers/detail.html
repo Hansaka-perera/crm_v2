@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block crumb %}APP Customers / {{ item.title }}{% endblock %}
+{% block content %}
+<h1>{{ item.title }}</h1>
+<div class="detail">
+  <div class="panel">
+    <p><strong>Customer:</strong> {{ item.customer_name }}</p>
+    <p><strong>Email:</strong> {{ item.customer_email }}</p>
+    <p><strong>Phone:</strong> {{ item.customer_phone or '—' }}</p>
+    <p><strong>Organization:</strong> {{ item.organization_name or '—' }}</p>
+    <p><strong>Type:</strong> {{ item.request_type }} · <strong>Status:</strong> {{ item.status }}</p>
+    <p>{{ item.description }}</p>
+    {% if item.notes %}<pre>{{ item.notes }}</pre>{% endif %}
+  </div>
+  <div class="panel">
+    <form method="post" action="{{ url_for('customers.update', request_id=item.id) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label class="field">Assign to
+        <select name="assigned_to_id">
+          <option value="">Unassigned</option>
+          {% for u in users %}<option value="{{ u.id }}" {% if item.assigned_to_id==u.id %}selected{% endif %}>{{ u.name }}</option>{% endfor %}
+        </select>
+      </label>
+      <label class="field">Link person
+        <select name="person_id"><option value="">—</option>{% for p in people %}<option value="{{ p.id }}" {% if item.person_id==p.id %}selected{% endif %}>{{ p.name }}</option>{% endfor %}</select>
+      </label>
+      <label class="field">Link organization
+        <select name="organization_id"><option value="">—</option>{% for o in organizations %}<option value="{{ o.id }}" {% if item.organization_id==o.id %}selected{% endif %}>{{ o.name }}</option>{% endfor %}</select>
+      </label>
+      <label class="field">Internal note <textarea name="notes"></textarea></label>
+      <button class="btn btn-outline" name="action" value="assign">Assign</button>
+      <button class="btn btn-outline" name="action" value="link">Save links</button>
+      {% if current_user.role in ['admin','manager'] %}
+      <button class="btn btn-primary" name="action" value="approve">Approve</button>
+      <button class="btn btn-danger" name="action" value="reject">Reject</button>
+      {% endif %}
+      <button class="btn btn-primary" name="action" value="complete">Complete</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block crumb %}Search{% endblock %}
+{% block content %}
+<h1>Search results for “{{ q }}”</h1>
+{% if not q %}<p>Type a query in the top search bar.</p>{% endif %}
+<h3>People</h3>
+{% for p in people %}<div><a href="{{ url_for('contacts.person_detail', person_id=p.id) }}">{{ p.name }}</a></div>{% else %}<p class="muted">None</p>{% endfor %}
+<h3>Organizations</h3>
+{% for o in organizations %}<div><a href="{{ url_for('contacts.organization_detail', org_id=o.id) }}">{{ o.name }}</a></div>{% else %}<p class="muted">None</p>{% endfor %}
+<h3>Deals</h3>
+{% for d in deals %}<div><a href="{{ url_for('deals.deal_detail', deal_id=d.id) }}">{{ d.title }}</a></div>{% else %}<p class="muted">None</p>{% endfor %}
+<h3>Leads</h3>
+{% for l in leads %}<div><a href="{{ url_for('leads.lead_detail', lead_id=l.id) }}">{{ l.title }}</a></div>{% else %}<p class="muted">None</p>{% endfor %}
+<h3>APP Customers</h3>
+{% for c in customers %}<div><a href="{{ url_for('customers.detail', request_id=c.id) }}">{{ c.title }}</a></div>{% else %}<p class="muted">None</p>{% endfor %}
+{% endblock %}

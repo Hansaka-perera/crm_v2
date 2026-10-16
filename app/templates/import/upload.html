@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block crumb %}Import {{ kind }}{% endblock %}
+{% block content %}
+<h1>Import {{ kind }}</h1>
+<p>Download the Excel template, fill it, then upload .xlsx or .csv. Next you will map columns and choose how to handle duplicates.</p>
+<p><a class="btn btn-outline" href="{{ template_url }}">Download template</a></p>
+<form method="post" enctype="multipart/form-data" class="panel">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="file" name="file" accept=".xlsx,.xls,.csv" required>
+  <button class="btn btn-primary" style="margin-top:12px;">Upload and continue</button>
+</form>
+<p class="muted">Expected fields: {{ fields|join(', ') }}</p>
+{% endblock %}

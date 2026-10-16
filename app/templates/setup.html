@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block crumb %}Setup guide{% endblock %}
+{% block content %}
+<h1>Setup guide</h1>
+<p>ITGlow CRM is ready. Use this checklist to finish your workspace.</p>
+<div class="cards">
+  <div class="stat-card"><div class="muted">People</div><div class="n">{{ counts.people }}</div><a href="{{ url_for('contacts.people') }}">Open</a></div>
+  <div class="stat-card"><div class="muted">Organizations</div><div class="n">{{ counts.organizations }}</div><a href="{{ url_for('contacts.organizations') }}">Open</a></div>
+  <div class="stat-card"><div class="muted">Deals</div><div class="n">{{ counts.deals }}</div><a href="{{ url_for('deals.list_deals') }}">Open</a></div>
+  <div class="stat-card"><div class="muted">Leads</div><div class="n">{{ counts.leads }}</div><a href="{{ url_for('leads.inbox') }}">Open</a></div>
+  <div class="stat-card"><div class="muted">Activities</div><div class="n">{{ counts.activities }}</div><a href="{{ url_for('activities.list_activities') }}">Open</a></div>
+  <div class="stat-card"><div class="muted">APP Customers</div><div class="n">{{ counts.customers }}</div><a href="{{ url_for('customers.list_requests') }}">Open</a></div>
+</div>
+<ol>
+  <li>Invite staff under Settings → Users & roles.</li>
+  <li>Create or import people and organizations.</li>
+  <li>Add deals in the table/list view and move stages from the dropdown.</li>
+  <li>Publish a web form or connect the customer app API.</li>
+</ol>
+{% endblock %}

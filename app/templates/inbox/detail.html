@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block crumb %}Sales Inbox / {{ message.subject }}{% endblock %}
+{% block content %}
+<h1>{{ message.subject }}</h1>
+<p class="muted">From {{ message.from_email }} · {{ message.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+<div class="panel"><p>{{ message.body }}</p></div>
+<form method="post" action="{{ url_for('inbox.message_delete', message_id=message.id) }}" data-confirm="Delete this message?">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <button class="btn btn-danger" style="margin-top:12px;">Delete</button>
+</form>
+{% endblock %}

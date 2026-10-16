@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block crumb %}Settings / API keys{% endblock %}
+{% block content %}
+<h1>Customer App API keys</h1>
+<p>The customer application should send <code>X-API-Key</code> on <code>POST /api/v1/customer-requests</code>. The raw key is shown only once.</p>
+{% if new_key %}
+<div class="flash success">New key: <code>{{ new_key }}</code></div>
+{% endif %}
+<form method="post" action="{{ url_for('admin.api_key_new') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input name="name" placeholder="Key name" value="Customer App">
+  <button class="btn btn-primary">Generate key</button>
+</form>
+<table class="data" style="margin-top:16px;">
+  <thead><tr><th>Name</th><th>Prefix</th><th>Active</th><th>Last used</th><th></th></tr></thead>
+  <tbody>
+    {% for k in keys %}
+    <tr>
+      <td>{{ k.name }}</td>
+      <td>{{ k.prefix }}…</td>
+      <td>{{ 'Yes' if k.is_active else 'No' }}</td>
+      <td>{{ k.last_used_at.strftime('%Y-%m-%d %H:%M') if k.last_used_at else 'Never' }}</td>
+      <td>
+        <form method="post" action="{{ url_for('admin.api_key_toggle', key_id=k.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-sm btn-outline">Toggle</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

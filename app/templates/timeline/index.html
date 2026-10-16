@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block crumb %}Contacts / Contacts timeline{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Contacts timeline</h1>
+  <form method="get"><label>Range <select name="months" onchange="this.form.submit()"><option value="3" {% if months_back==3 %}selected{% endif %}>3 months back</option><option value="6" {% if months_back==6 %}selected{% endif %}>6 months back</option></select></label></form>
+  <div class="spacer"></div>
+  <span class="muted">{{ people|length }} people</span>
+</div>
+{% for p in people %}
+<div class="timeline-row">
+  <div>
+    <a href="{{ url_for('contacts.person_detail', person_id=p.id) }}">{{ p.name }}</a>
+    <div class="muted">{{ p.organization.name if p.organization else '' }}</div>
+  </div>
+  <div class="timeline-track">
+    {% for a in p.activities %}
+      {% if a.due_at %}
+      <div class="dot" style="left: {{ (loop.index * 12) % 90 }}%" title="{{ a.subject }}">{{ a.type[0]|upper }}</div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <a href="{{ url_for('activities.activity_new') }}?person_id={{ p.id }}">+</a>
+</div>
+{% else %}
+<div class="empty">No contacts to plot on the timeline.</div>
+{% endfor %}
+{% endblock %}
